@@ -1,6 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
-contextBridge.exposeInMainWorld('connection',   
+contextBridge.exposeInMainWorld('Renderer',   
 {
-    login: (username, password) => ipcRenderer.send('log-in', username, password)
+    login: (channel, username, password) => ipcRenderer.send(channel, username, password),
+    startServer: () => ipcRenderer.send('start-server'),
+    connect: (address) => ipcRenderer.send('connect', address),
+    send: (text) => ipcRenderer.send('send-message', text),
+    redirect: (file) => ipcRenderer.send('redirect', file)
 })
