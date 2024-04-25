@@ -33,6 +33,7 @@ document.getElementById('form').addEventListener("submit", (e) => {
         console.log("wrong");
     } else {
         window.Renderer.redirect('home')
+        window.Renderer.login("log-in",username, password)
     }
     // console.log('send data');
 })

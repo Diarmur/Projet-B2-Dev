@@ -7,6 +7,7 @@ const serverCom = require('./server')
 const clientCom = require('./client')
 const messageHandler = require('./messageHandler')
 const tools = require('./tools')
+const axios = require('axios');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -27,12 +28,19 @@ const createWindow = () => {
     }
   })
 
-  ipcMain.on('log-in', (event, username, password) => {
-    // const webContents = event.sender;
-    // const win = BrowserWindow.fromWebContents(webContents)
+  ipcMain.on('log-in', async (event, username, password) => {
     console.log("erer");
     console.log(username, password);
-  })
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+        username: username,
+        password: password
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(`Error: ${error.response.status}`);
+    }
+  });
 
   ipcMain.on('redirect', (event, file) => {
     mainWindow.loadFile('src/'+file+'/'+file+'.html')
@@ -57,7 +65,7 @@ const createWindow = () => {
   })
 
   // Load index.html into the new BrowserWindow
-  mainWindow.loadFile('./src/home/home.html')
+  mainWindow.loadFile('./src/login/login.html')
 
   // Open DevTools - Remove for PRODUCTION!
 //   mainWindow.webContents.openDevTools();
