@@ -4,15 +4,15 @@ const clientCom = require('./client')
 const messageHandler = require('./messageHandler')
 
 
-const minPort = 8000
-const maxPort = 8001
+// const minPort = 8002
+// const maxPort = 8003
 
 const sockets = []
 let client, server
 
 const serverLaunch = () => {
-    const port = tools.pickPort(minPort, maxPort)
-    console.log(port);
+    // const port = tools.pickPort(minPort, maxPort)
+    // console.log(port);
     server = net.createServer(socket => {
         socket.on('end', () => {
             console.log('D:Client disconnect');
@@ -32,7 +32,7 @@ const serverLaunch = () => {
         });
     })
     
-    server.listen(8000, () => {
+    server.listen(8002, () => {
         console.log('D:Server listening on port '+ server.address().port);
     })
     return server

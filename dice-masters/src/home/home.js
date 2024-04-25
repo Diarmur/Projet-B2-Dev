@@ -5,7 +5,6 @@ const send = document.getElementById("send")
 
 create.addEventListener("click", (e) => {
     window.Renderer.startServer()
-    // window.Renderer.connect()
 })
 
 connect.addEventListener("click", (e) => {
@@ -14,9 +13,9 @@ connect.addEventListener("click", (e) => {
     window.Renderer.connect(port)
 })
 
-send.addEventListener("click", (e) => {
-    text = document.getElementById("text").value
-    window.Renderer.send(text)
-})
+// send.addEventListener("click", (e) => {
+//     text = document.getElementById("text").value
+//     window.Renderer.send(text)
+// })
 
 

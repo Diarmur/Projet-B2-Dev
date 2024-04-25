@@ -12,12 +12,12 @@ const axios = require('axios');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow, server, client, port
-let sockets = []
+let username
 
 // Create a new BrowserWindow when `app` is ready
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 200, height: 200,
+    width: 400, height: 500,
     frame:true,
     webPreferences: {
       // --- !! IMPORTANT !! ---
@@ -28,12 +28,11 @@ const createWindow = () => {
     }
   })
 
-  ipcMain.on('log-in', async (event, username, password) => {
-    console.log("erer");
-    console.log(username, password);
+  ipcMain.on('log-in', async (event, name, password) => {
+    username = name
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", {
-        username: username,
+        username: name,
         password: password
       });
       console.log(response.data);
@@ -48,36 +47,44 @@ const createWindow = () => {
 
   ipcMain.on('start-server', (event) => {
     console.log('shoul start the server');
-    server, client, port = serverCom.serverLaunch()
-    client = clientCom.connectServer(8000)
+    server = serverCom.serverLaunch()
+    client = clientCom.connectServer(8002)
+    mainWindow.loadFile('./src/lobby/lobby.html')
   })
 
   ipcMain.on('connect', (event, address) => {
     console.log("try connection on :", address);
     client = clientCom.connectServer(address)
-    // console.log("CLIENT !!");
-    // serverCom.sockets.push(client)
+    mainWindow.loadFile('./src/lobby/lobby.html')
+  })
+
+  ipcMain.on('lobby-ready', (event) => {
+    event.sender.send('init-lobby', {username:username, code:"1234"})
+    initLobby(username, "1234")
+  })
+
+  ipcMain.on('lobby-leave', (event, data) => {
+    console.log("test");
+    client.end()
+    console.log(server);
+    if (server != undefined) server.close()
+    mainWindow.loadFile("./src/home/home.html")
   })
 
   ipcMain.on('send-message', (event, text) => {
     messageHandler.sendData(client, text)
-    // messageHandler.broadCast(client, sockets, text)
   })
 
-  // Load index.html into the new BrowserWindow
   mainWindow.loadFile('./src/login/login.html')
 
   // Open DevTools - Remove for PRODUCTION!
-//   mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // Listen for window being closed
   mainWindow.on('closed',  () => {
     mainWindow = null
   })
 }
-
-// Electron `app` is ready
-// app.on('ready', createWindow)
 
 // Quit when all windows are closed - (Not macOS - Darwin)
 app.on('window-all-closed', () => {
@@ -94,3 +101,8 @@ app.whenReady().then(() => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
   })
+
+const initLobby = (username, code) => {
+    console.log("send info");
+
+}
