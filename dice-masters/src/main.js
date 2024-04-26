@@ -45,44 +45,76 @@ const createWindow = () => {
     mainWindow.loadFile('src/'+file+'/'+file+'.html')
   })
 
-  ipcMain.on('start-server', (event) => {
-    console.log('shoul start the server');
-    server = serverCom.serverLaunch()
-    client = clientCom.connectServer(8002, mainWindow, username)
-    mainWindow.loadFile('./src/lobby/lobby.html')
-  })
 
-  ipcMain.on('connect', (event, address) => {
-    console.log("try connection on :", address);
-    client = clientCom.connectServer(address, mainWindow, username)
-    mainWindow.loadFile('./src/lobby/lobby.html')
-  })
+  // MultiSystem Wait befor use
 
-  ipcMain.on('lobby-ready', (event) => {
-    mainWindow.webContents.send('init-lobby', {username:username, code:"1234"})
-  })
+//   ipcMain.on('start-server', (event) => {
+//     console.log('shoul start the server');
+//     server = serverCom.serverLaunch()
+//     client = clientCom.connectServer(8002, mainWindow, username)
+//     mainWindow.loadFile('./src/lobby/lobby.html')
+//   })
 
-  ipcMain.on('lobby-start', (event, data) => {
-    client.write(JSON.stringify({action:"start"}))
-  })
+//   ipcMain.on('connect', (event, address) => {
+//     console.log("try connection on :", address);
+//     client = clientCom.connectServer(address, mainWindow, username)
+//     mainWindow.loadFile('./src/lobby/lobby.html')
+//   })
 
-  ipcMain.on('refresh-list-players', (event, data) => {
-    event.sender.send('refresh-players')
-  })
+//   ipcMain.on('lobby-ready', (event) => {
+//     mainWindow.webContents.send('init-lobby', {username:username, code:"1234"})
+//   })
 
-  ipcMain.on('lobby-leave', (event, data) => {
-    console.log("test");
-    client.end()
-    console.log(server);
-    if (server != undefined) server.close()
-    mainWindow.loadFile("./src/home/home.html")
-  })
+//   ipcMain.on('lobby-start', (event, data) => {
+//     client.write(JSON.stringify({action:"start"}))
+//   })
 
-  ipcMain.on('send-message', (event, text) => {
-    messageHandler.sendDataToServer(client, text)
-  })
+//   ipcMain.on('refresh-list-players', (event, data) => {
+//     event.sender.send('refresh-players')
+//   })
 
-  ipcMain.on('game-ready', (event, data) => {
+//   ipcMain.on('lobby-leave', (event, data) => {
+//     console.log("test");
+//     client.end()
+//     console.log(server);
+//     if (server != undefined) server.close()
+//     mainWindow.loadFile("./src/home/home.html")
+//   })
+
+//   ipcMain.on('send-message', (event, text) => {
+//     messageHandler.sendDataToServer(client, text)
+//   })
+
+//   ipcMain.on('game-ready', (event, data) => {
+//   })
+
+    ipcMain.on('start-server', (event) => {
+        mainWindow.loadFile('./src/lobby/lobby.html')
+      })
+
+  ipcMain.on("lobby-ready", (event, data) => {
+    // Get all character sheet of the user
+    charExemples = {
+        "characters": [
+            {
+                "character_name": "Aldric",
+                "level":5,
+                "class": "Fighter"
+            },
+            {
+                "character_name": "Lyra",
+                "level":2,
+                "class": "Wizard"
+            }
+        ]
+    }
+
+    data = {
+        username:username,
+        characterSheets: charExemples
+    }
+    
+    event.sender.send('init-lobby', data)
   })
 
   mainWindow.loadFile('./src/login/login.html')

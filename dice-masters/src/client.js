@@ -18,7 +18,6 @@ const connectServer = (port, window, username) => {
             window.loadFile("./src/game/game.html")
         } else if (parseData.action == "refresh-players") {
             console.log(parseData.usernames);
-            
             window.webContents.send('new-player', parseData.usernames)
         }
     })
