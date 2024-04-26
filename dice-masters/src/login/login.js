@@ -32,7 +32,8 @@ document.getElementById('form').addEventListener("submit", (e) => {
     if (username == "" || password == "") {
         console.log("wrong");
     } else {
-        window.Renderer.redirect('home')
+        window.com.redirect('home')
+        window.com.login("log-in",username, password)
     }
     // console.log('send data');
 })
