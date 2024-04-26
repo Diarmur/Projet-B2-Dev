@@ -4,13 +4,13 @@ const connect = document.getElementById("connect")
 const send = document.getElementById("send")
 
 create.addEventListener("click", (e) => {
-    window.Renderer.startServer()
+    window.com.startServer()
 })
 
 connect.addEventListener("click", (e) => {
     port = document.getElementById("join").value
     console.log(document.getElementById("join").value);
-    window.Renderer.connect(port)
+    window.com.connect(port)
 })
 
 // send.addEventListener("click", (e) => {

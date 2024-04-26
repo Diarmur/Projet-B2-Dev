@@ -48,19 +48,26 @@ const createWindow = () => {
   ipcMain.on('start-server', (event) => {
     console.log('shoul start the server');
     server = serverCom.serverLaunch()
-    client = clientCom.connectServer(8002)
+    client = clientCom.connectServer(8002, mainWindow, username)
     mainWindow.loadFile('./src/lobby/lobby.html')
   })
 
   ipcMain.on('connect', (event, address) => {
     console.log("try connection on :", address);
-    client = clientCom.connectServer(address)
+    client = clientCom.connectServer(address, mainWindow, username)
     mainWindow.loadFile('./src/lobby/lobby.html')
   })
 
   ipcMain.on('lobby-ready', (event) => {
-    event.sender.send('init-lobby', {username:username, code:"1234"})
-    initLobby(username, "1234")
+    mainWindow.webContents.send('init-lobby', {username:username, code:"1234"})
+  })
+
+  ipcMain.on('lobby-start', (event, data) => {
+    client.write(JSON.stringify({action:"start"}))
+  })
+
+  ipcMain.on('refresh-list-players', (event, data) => {
+    event.sender.send('refresh-players')
   })
 
   ipcMain.on('lobby-leave', (event, data) => {
@@ -72,7 +79,10 @@ const createWindow = () => {
   })
 
   ipcMain.on('send-message', (event, text) => {
-    messageHandler.sendData(client, text)
+    messageHandler.sendDataToServer(client, text)
+  })
+
+  ipcMain.on('game-ready', (event, data) => {
   })
 
   mainWindow.loadFile('./src/login/login.html')
@@ -102,7 +112,9 @@ app.whenReady().then(() => {
     })
   })
 
-const initLobby = (username, code) => {
-    console.log("send info");
 
+const checkReady = () => {
+    messageHandler.sendDataToRenderer(window, 'is-ready', '')
 }
+
+module.exports = {checkReady}

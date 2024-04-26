@@ -2,8 +2,12 @@ const net = require('net')
 
 
 // Create a send data function
-const sendData = (client, msg) => {
+const sendDataToServer = (client, msg) => {
     client.write(msg)
+}
+
+const sendDataToRenderer = (window, channel, msg) => {
+    window.webContents.send(channel, msg)
 }
 
 // // BroadCast 
@@ -15,6 +19,11 @@ const sendData = (client, msg) => {
 // }
 
 // Create a data handler
+const handleMsg = (msg) => {
+    // exemple : "'action type':attack, "
+    data = JSON.parse(msg)
+    return data
+}
 
 
-module.exports = {sendData};
+module.exports = {sendDataToServer, sendDataToRenderer};
