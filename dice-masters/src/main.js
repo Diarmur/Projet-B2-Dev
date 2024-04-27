@@ -17,7 +17,8 @@ let username
 // Create a new BrowserWindow when `app` is ready
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 400, height: 500,
+    width: 800, height: 500,
+    minWidth: 800, minHeight: 500,
     frame:true,
     webPreferences: {
       // --- !! IMPORTANT !! ---
@@ -29,7 +30,6 @@ const createWindow = () => {
   })
 
   ipcMain.on('log-in', async (event, name, password) => {
-    username = name
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", {
         username: name,
@@ -41,10 +41,27 @@ const createWindow = () => {
     }
   });
 
+  ipcMain.on('register', async (event, username, email, password, password_confirmation, first_name, last_name) => {
+    console.log('hit register');
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/register", {
+        username: username,
+        email: email,
+        password: password,
+        password_confirmation: password_confirmation,
+        first_name: first_name,
+        last_name: last_name
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(`Error: ${error.response.status}`);
+    }
+    
+  });
+
   ipcMain.on('redirect', (event, file) => {
     mainWindow.loadFile('src/'+file+'/'+file+'.html')
   })
-
 
   // MultiSystem Wait befor use
 
@@ -117,7 +134,7 @@ const createWindow = () => {
     event.sender.send('init-lobby', data)
   })
 
-  mainWindow.loadFile('./src/login/login.html')
+  mainWindow.loadFile('./src/register/register.html')
 
   // Open DevTools - Remove for PRODUCTION!
   mainWindow.webContents.openDevTools();
