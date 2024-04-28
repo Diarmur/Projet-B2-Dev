@@ -1,4 +1,5 @@
 // Modules
+const { setupTitlebar, attachTitlebarToWindow } = require('custom-electron-titlebar/main');
 const {app, BrowserWindow} = require('electron')
 const { ipcMain } = require('electron/main')
 const path = require('path')
@@ -13,17 +14,20 @@ const axios = require('axios');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow, server, client, port
 let username
-
+setupTitlebar();
 // Create a new BrowserWindow when `app` is ready
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 800, height: 500,
+    width: 1100, height: 700,
     minWidth: 800, minHeight: 500,
-    frame:true,
+    frame:false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: true,
     webPreferences: {
       // --- !! IMPORTANT !! ---
       // Disable 'contextIsolation' to allow 'nodeIntegration'
       // 'contextIsolation' defaults to "true" as from Electron v12
+      sandbox: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
@@ -41,16 +45,14 @@ const createWindow = () => {
     }
   });
 
-  ipcMain.on('register', async (event, username, email, password, password_confirmation, first_name, last_name) => {
+  ipcMain.on('register', async (event, username, email, password, password_confirmation) => {
     console.log('hit register');
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/register", {
         username: username,
         email: email,
         password: password,
-        password_confirmation: password_confirmation,
-        first_name: first_name,
-        last_name: last_name
+        password_confirmation: password_confirmation
       });
       console.log(response.data);
     } catch (error) {
@@ -111,6 +113,7 @@ const createWindow = () => {
 
   ipcMain.on("lobby-ready", (event, data) => {
     // Get all character sheet of the user
+    console.log("lobby-ready");
     charExemples = {
         "characters": [
             {
@@ -134,7 +137,7 @@ const createWindow = () => {
     event.sender.send('init-lobby', data)
   })
 
-  mainWindow.loadFile('./src/register/register.html')
+  mainWindow.loadFile('./src/home/home.html')
 
   // Open DevTools - Remove for PRODUCTION!
   mainWindow.webContents.openDevTools();

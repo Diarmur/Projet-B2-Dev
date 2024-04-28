@@ -15,15 +15,13 @@ try {
     }
 }
 
-const register = async (username, email, password, password_confirmation, first_name, last_name) => {   
+const register = async (username, email, password, password_confirmation) => {   
     try {
         const response = await axios.post("http://127.0.0.1:8000/api/register", {
             username: username,
             email: email,
             password: password,
-            password_confirmation: password_confirmation,
-            first_name: first_name,
-            last_name: last_name
+            password_confirmation: password_confirmation
         });
             console.log(response.data);
         } catch (error) {
