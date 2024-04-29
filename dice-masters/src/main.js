@@ -8,16 +8,47 @@ const clientCom = require('./client')
 const messageHandler = require('./messageHandler')
 const tools = require('./tools')
 const axios = require('axios');
+const apiDnd = require('./dnd_api')
+const { log } = require('console')
+const {Character, Monster} = require('./classes')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow, server, client, port
+let mainWindow
 let username
+let selectedCharacter
+let character
+let allMonsters = []
+let monstersData = {}
+
+const charSheetExemple = {
+            "id": 1,
+            "character_name": "Aldric",
+            "user_id": "123456",
+            "race": "Human",
+            "class": "Fighter",
+            "level": 5,
+            "background": "Noble",
+            "alignment": "Lawful Good",
+            "experience": 12000,
+            "strength": 16,
+            "dexterity": 12,
+            "constitution": 14,
+            "intelligence": 10,
+            "wisdom": 10,
+            "charisma": 13,
+            "weapon": "piercing:1d8",
+            "armor_class": 18,
+            "speed": 30,
+            "spell_book": "fireball,acid-arrow"
+    }
+
+// let server, client, port
 
 // Create a new BrowserWindow when `app` is ready
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 400, height: 500,
+    width: 1000, height: 800,
     frame:true,
     webPreferences: {
       // --- !! IMPORTANT !! ---
@@ -30,15 +61,15 @@ const createWindow = () => {
 
   ipcMain.on('log-in', async (event, name, password) => {
     username = name
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", {
-        username: name,
-        password: password
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.log(`Error: ${error.response.status}`);
-    }
+    // try {
+    //   const response = await axios.post("http://127.0.0.1:8000/api/login", {
+    //     username: name,
+    //     password: password
+    //   });
+    //   console.log(response.data);
+    // } catch (error) {
+    //   console.log(`Error: ${error.response.status}`);
+    // }
   });
 
   ipcMain.on('redirect', (event, file) => {
@@ -99,12 +130,14 @@ const createWindow = () => {
             {
                 "character_name": "Aldric",
                 "level":5,
-                "class": "Fighter"
+                "class": "Fighter",
+                "id":1 
             },
             {
                 "character_name": "Lyra",
                 "level":2,
-                "class": "Wizard"
+                "class": "Wizard",
+                "id":2 
             }
         ]
     }
@@ -115,6 +148,48 @@ const createWindow = () => {
     }
     
     event.sender.send('init-lobby', data)
+  })
+
+  ipcMain.on('request-monster', async (event, data) => {
+    // JSON.parse(data)
+    console.log("monsters/"+data.name);
+    monsterData = await apiDnd.getApi("monsters/"+data.name)
+    monstersData[monsterData.name] = monsterData  
+    event.sender.send('get-monster', monsterData)
+  })
+
+  ipcMain.on('start', (event, data) => {
+    if (selectedCharacter != undefined) mainWindow.loadFile("./src/game/game.html")
+  })
+
+  ipcMain.on('select-sheet', (event, data) => {
+    selectedCharacter = data
+  })
+
+  ipcMain.on('game-ready', async (event, data) => {
+    // get the character sheet from the api
+    const allData = {}
+    let monsters = []
+    let sheet = []
+    for (var monsterName in monstersData) {
+        monsters = tools.formatMonsterData(monstersData[monsterName])
+        
+    }
+    try {
+        allData['sheet'] = await tools.formatCharacterSheet(charSheetExemple)
+        character = new Character(sheet)
+    } catch (error) {
+        console.log(error);
+    }
+
+    monsters.forEach(monster => {
+        allMonsters.push(new Monster(monster))
+    });
+    allData.monsters = monsters
+    console.log("player sheet :",allData.sheet);
+    // console.log(monsters);
+    
+    event.sender.send('setup-game', allData)
   })
 
   mainWindow.loadFile('./src/login/login.html')
