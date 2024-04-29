@@ -58,6 +58,39 @@ const formatCharacterSheet = async (sheet) => {
     return sheet
 }
 
+const getMyId = async () => {
+    const cookies = await session.defaultSession.cookies.get({});
+    const token = cookies[0].value;  
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+
+    const me = await axios.get(
+      'http://127.0.0.1:8000/api/me',
+      {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        } 
+      }
+    );
+
+    return me.data.id
+}
+
+const getCharacterSheet = async (id) => {
+    const response = await axios.get( 
+        'http://127.0.0.1:8000/api/characterSheets/'+id,
+        {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          } 
+        }
+      );
+    
+    return response.data
+}
+
 const generateSpellBook = async (spells, sheet) => {
     const spellsFormat = spells.split(',')
     const spell_book = []

@@ -106,11 +106,6 @@ const createCharSheet = (charSheet) => {
 const disconnect = () => {
     console.log("disconnecting");
     com.sendToMain('disconnect', {})
-    div.addEventListener("click", (e) => {
-        let id = div.children[3]
-        console.log(div.children[3]);
-        com.sendToMain('select-sheet', id.innerText)
-    })
 }
 
 const createMonster = (monster) => {
