@@ -1,5 +1,8 @@
 const api = require('./dnd_api')
+const axios = require('axios')
+const {session} = require('electron')
 
+const URL_API = "http://10.44.18.213:8000"
 
 const pickPort = (minPort, maxPort) => {
     const random = Math.random()
@@ -58,6 +61,38 @@ const formatCharacterSheet = async (sheet) => {
     return sheet
 }
 
+const getMyId = async () => {
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+
+    const me = await axios.get(
+        URL_API+'/api/me',
+      {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        } 
+      }
+    );
+
+    return me.data.id
+}
+
+const getCharacterSheet = async (id) => {
+    const cookies = await session.defaultSession.cookies.get({});
+    const token = cookies[0].value;  
+    const response = await axios.get( 
+        URL_API+'/api/characterSheets/'+id,
+        {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          } 
+        }
+      );
+    return response.data
+}
+
 const generateSpellBook = async (spells, sheet) => {
     const spellsFormat = spells.split(',')
     const spell_book = []
@@ -73,7 +108,7 @@ const generateSpellBook = async (spells, sheet) => {
 }
 
 
-module.exports = {pickPort, formatMonsterData, formatCharacterSheet}
+module.exports = {pickPort, formatMonsterData, formatCharacterSheet, getMyId, getCharacterSheet, generateSpellBook}
 
 // {
 //     index: 'acid-arrow',
