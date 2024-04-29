@@ -52,27 +52,8 @@
 
 
 const charSheetDiv = document.getElementById("characterSheets")
-const addEnemy = document.getElementById("enemyAdd")
+const addEnemy = document.getElementById("addEnemy")
 const start = document.getElementById("start")
-
-com.sendToMain('lobby-ready', {})
-
-com.getFromMain('init-lobby', (data) => {
-    console.log(data.characterSheets);
-    data.characterSheets.characters.forEach(characterSheet => {
-        createCharSheet(characterSheet)
-    });
-})
-
-addEnemy.addEventListener("click", (e) => {
-    const monsterName = document.getElementById("monsterName")
-    console.log(monsterName.value);
-    com.sendToMain('request-monster', {name:monsterName.value})
-})
-
-com.getFromMain('get-monster', (data) => {
-    createMonster(data)
-})
 
 
 const createCharSheet = (charSheet) => {
@@ -101,7 +82,17 @@ const createCharSheet = (charSheet) => {
     div.appendChild(id)
 
     charSheetDiv.appendChild(div)
+    div.addEventListener("click", (e) => {
+        let id = div.children[3]
+        console.log(div.children[3]);
+        com.sendToMain('select-sheet', id.innerText)
+    })
 }
+
+start.addEventListener('click', (e) => {
+    console.log('start');
+    com.sendToMain('start')
+})
 
 const disconnect = () => {
     console.log("disconnecting");
@@ -132,3 +123,22 @@ start.addEventListener('click', (e) => {
     com.sendToMain('start')
 })
   
+
+com.sendToMain('lobby-ready', {})
+
+com.getFromMain('init-lobby', (data) => {
+    console.log(data.characterSheets);
+    data.characterSheets.characters.forEach(characterSheet => {
+        createCharSheet(characterSheet)
+    });
+})
+
+addEnemy.addEventListener("click", (e) => {
+    const monsterName = document.getElementById("monsterName")
+    console.log(monsterName.value);
+    if (monsterName != "") com.sendToMain('request-monster', {name:monsterName.value})
+})
+
+com.getFromMain('get-monster', (data) => {
+    createMonster(data)
+})

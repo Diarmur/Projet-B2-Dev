@@ -23,6 +23,8 @@ let character
 let allMonsters = []
 let monstersData = {}
 
+const URL_API = "http://10.44.18.213:8000"
+
 const charSheetExemple = {
             "id": 1,
             "character_name": "Aldric",
@@ -67,10 +69,8 @@ const createWindow = async () => {
   })
 
   ipcMain.on('log-in', async (event, name, password) => {
-
-
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+      const response = await axios.post(URL_API+"/api/login", {
         username: name,
         password: password
       });
@@ -79,7 +79,7 @@ const createWindow = async () => {
       expirationDate.setDate(expirationDate.getDate() + 7);
 
       const cookie = {
-        url: 'http://localhost/', 
+        url: URL_API, 
         name: 'token', 
         value: response.data.access_token,
         expirationDate : expirationDate.getTime() / 1000
@@ -89,13 +89,13 @@ const createWindow = async () => {
       })
       mainWindow.loadFile('./src/lobby/lobby.html')
     } catch (error) {
-      console.log(`Error: ${error.response.status}`);
+      console.log(`Error: ${error}`);
     }
   });
 
   ipcMain.on('register', async (event, username, email, password, password_confirmation) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/register", {
+      const response = await axios.post(URL_API+"/api/register", {
         username: username,
         email: email,
         password: password,
@@ -105,7 +105,7 @@ const createWindow = async () => {
       expirationDate.setDate(expirationDate.getDate() + 7);
 
       const cookie = {
-        url: 'http://localhost/', 
+        url: URL_API, 
         name: 'token', 
         value: response.data.access_token,
         expirationDate : expirationDate.getTime() / 1000
@@ -187,7 +187,7 @@ const createWindow = async () => {
     };
 
     const me = await axios.get(
-      'http://127.0.0.1:8000/api/me',
+      URL_API+'/api/me',
       {
         headers: {
           'Authorization': 'Bearer ' + token
@@ -196,7 +196,7 @@ const createWindow = async () => {
     );
 
     const response = await axios.get( 
-      'http://127.0.0.1:8000/api/characterSheets/user/'+me.data.id,
+      URL_API+'/api/characterSheets/user/'+me.data.id,
       {
         headers: {
           'Authorization': 'Bearer ' + token
