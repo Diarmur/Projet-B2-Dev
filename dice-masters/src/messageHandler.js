@@ -19,7 +19,7 @@ const sendDataToRenderer = (window, channel, msg) => {
 // }
 
 // Create a data handler
-const handleMsg = (msg) => {
+const get = (msg) => {
     // exemple : "'action type':attack, "
     data = JSON.parse(msg)
     return data
