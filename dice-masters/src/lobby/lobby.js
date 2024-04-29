@@ -77,6 +77,7 @@ com.getFromMain('get-monster', (data) => {
 
 const createCharSheet = (charSheet) => {
     const div = document.createElement('div')
+    div.classList.add('charSheet')
     const lvl = document.createElement('span')
     const name = document.createElement('span')
     const className = document.createElement('span')
@@ -100,6 +101,11 @@ const createCharSheet = (charSheet) => {
     div.appendChild(id)
 
     charSheetDiv.appendChild(div)
+}
+
+const disconnect = () => {
+    console.log("disconnecting");
+    com.sendToMain('disconnect', {})
     div.addEventListener("click", (e) => {
         let id = div.children[3]
         console.log(div.children[3]);
@@ -125,3 +131,4 @@ start.addEventListener('click', (e) => {
     console.log('start');
     com.sendToMain('start')
 })
+  

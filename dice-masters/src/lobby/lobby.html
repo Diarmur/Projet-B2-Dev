@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./lobby.css">
+    <link rel="stylesheet" href="../css/global.css">
     <title>Lobby</title>
 </head>
 <body>
@@ -13,14 +14,19 @@
             <span class="character" id="character">Culdam</span>
         </div>
     </div> -->
-    <label>Characters</label>
-    <div class="characterSheets" id="characterSheets">
-    </div>
+    <div class="container">
+        <button id="disconnection" onclick="disconnect()">Disconnect</button>
+        <div class="characters">
 
-    <label>Monsters</label>
-    <div class="monsters" id="monsters">
-        <input type="text" id="monsterName">
-        <button id="enemyAdd">Add</button>
+        
+            <label>Characters</label>
+            <div class="characterSheets" id="characterSheets">
+            </div>
+        </div>
+        <label>Monsters</label>
+        <div class="monsters" id="monsters">
+            <button>Add</button>
+        </div>
     </div>
     <button id="start">Start</button>
     <!-- Wait for multi to be remake -->
