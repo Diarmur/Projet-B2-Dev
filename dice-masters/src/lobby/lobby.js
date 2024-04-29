@@ -97,7 +97,6 @@ start.addEventListener('click', (e) => {
 const disconnect = () => {
     console.log("disconnecting");
     com.sendToMain('disconnect', {})
-    
 }
 
 const createMonster = (monster) => {

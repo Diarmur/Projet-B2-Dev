@@ -84,6 +84,7 @@ const createWindow = async () => {
         value: response.data.access_token,
         expirationDate : expirationDate.getTime() / 1000
       }
+
       session.defaultSession.cookies.set(cookie, (error) => {
         if (error) console.error(error)
       })
@@ -178,7 +179,6 @@ const createWindow = async () => {
 
   ipcMain.on("lobby-ready", async (event, data) => {
     // Get all character sheet of the user
-    
     const cookies = await session.defaultSession.cookies.get({});
     const token = cookies[0].value;  
 
