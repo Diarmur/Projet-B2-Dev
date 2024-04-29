@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('com', {
     login: (channel, username, password) => ipcRenderer.send(channel, username, password),
     register: (channel, username, email, password, password_confirmation) => ipcRenderer.send(channel, username, email, password, password_confirmation),
+    disconnect: () => ipcRenderer.send('disconnect'),
     startServer: () => ipcRenderer.send('start-server'),
     connect: (address) => ipcRenderer.send('connect', address),
     send: (text) => ipcRenderer.send('send-message', text),

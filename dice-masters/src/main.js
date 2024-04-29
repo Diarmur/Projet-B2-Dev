@@ -1,5 +1,6 @@
 // Modules
 const { setupTitlebar, attachTitlebarToWindow } = require('custom-electron-titlebar/main');
+const {session} = require('electron')
 const {app, BrowserWindow} = require('electron')
 const { ipcMain } = require('electron/main')
 const path = require('path')
@@ -9,6 +10,7 @@ const clientCom = require('./client')
 const messageHandler = require('./messageHandler')
 const tools = require('./tools')
 const axios = require('axios');
+const { log } = require('console');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -16,7 +18,7 @@ let mainWindow, server, client, port
 let username
 setupTitlebar();
 // Create a new BrowserWindow when `app` is ready
-const createWindow = () => {
+const createWindow = async () => {
   mainWindow = new BrowserWindow({
     width: 1100, height: 700,
     minWidth: 800, minHeight: 500,
@@ -34,19 +36,33 @@ const createWindow = () => {
   })
 
   ipcMain.on('log-in', async (event, name, password) => {
+
+
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login", {
         username: name,
         password: password
       });
-      console.log(response.data);
+
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 7);
+
+      const cookie = {
+        url: 'http://localhost/', 
+        name: 'token', 
+        value: response.data.access_token,
+        expirationDate : expirationDate.getTime() / 1000
+      }
+      session.defaultSession.cookies.set(cookie, (error) => {
+        if (error) console.error(error)
+      })
+      mainWindow.loadFile('./src/lobby/lobby.html')
     } catch (error) {
       console.log(`Error: ${error.response.status}`);
     }
   });
 
   ipcMain.on('register', async (event, username, email, password, password_confirmation) => {
-    console.log('hit register');
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/register", {
         username: username,
@@ -54,7 +70,19 @@ const createWindow = () => {
         password: password,
         password_confirmation: password_confirmation
       });
-      console.log(response.data);
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + 7);
+
+      const cookie = {
+        url: 'http://localhost/', 
+        name: 'token', 
+        value: response.data.access_token,
+        expirationDate : expirationDate.getTime() / 1000
+      }
+      session.defaultSession.cookies.set(cookie, (error) => {
+        if (error) console.error(error)
+      })
+      mainWindow.loadFile('./src/lobby/lobby.html')
     } catch (error) {
       console.log(`Error: ${error.response.status}`);
     }
@@ -63,6 +91,12 @@ const createWindow = () => {
 
   ipcMain.on('redirect', (event, file) => {
     mainWindow.loadFile('src/'+file+'/'+file+'.html')
+  })
+
+  ipcMain.on('disconnect', (event) => {
+    console.log("disconnect");
+    session.defaultSession.clearStorageData()
+    mainWindow.loadFile('./src/login/login.html')
   })
 
   // MultiSystem Wait befor use
@@ -107,37 +141,56 @@ const createWindow = () => {
 //   ipcMain.on('game-ready', (event, data) => {
 //   })
 
-    ipcMain.on('start-server', (event) => {
+    ipcMain.on('start-server', async (event) => {
         mainWindow.loadFile('./src/lobby/lobby.html')
       })
 
-  ipcMain.on("lobby-ready", (event, data) => {
+  ipcMain.on("lobby-ready", async (event, data) => {
     // Get all character sheet of the user
-    console.log("lobby-ready");
+    
+    const cookies = await session.defaultSession.cookies.get({});
+    const token = cookies[0].value;  
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+
+    const me = await axios.get(
+      'http://127.0.0.1:8000/api/me',
+      {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        } 
+      }
+    );
+
+    const response = await axios.get( 
+      'http://127.0.0.1:8000/api/characterSheets/user/'+me.data.id,
+      {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        } 
+      }
+    );
+
     charExemples = {
-        "characters": [
-            {
-                "character_name": "Aldric",
-                "level":5,
-                "class": "Fighter"
-            },
-            {
-                "character_name": "Lyra",
-                "level":2,
-                "class": "Wizard"
-            }
-        ]
-    }
+      "characters": response.data
+  }
 
     data = {
-        username:username,
-        characterSheets: charExemples
+      username:username,
+      characterSheets: charExemples
     }
-    
+  
     event.sender.send('init-lobby', data)
-  })
 
-  mainWindow.loadFile('./src/home/home.html')
+  })
+  const cookies = await session.defaultSession.cookies.get({});
+  if  (cookies.length > 0) {
+    mainWindow.loadFile('./src/lobby/lobby.html')
+  } else{
+    mainWindow.loadFile('./src/login/login.html')
+  }
 
   // Open DevTools - Remove for PRODUCTION!
   mainWindow.webContents.openDevTools();
@@ -152,6 +205,7 @@ const createWindow = () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
 
 
 app.whenReady().then(() => {

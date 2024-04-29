@@ -65,6 +65,7 @@ com.getFromMain('init-lobby', (data) => {
 
 const createCharSheet = (charSheet) => {
     const div = document.createElement('div')
+    div.classList.add('charSheet')
     const lvl = document.createElement('span')
     const name = document.createElement('span')
     const className = document.createElement('span')
@@ -83,3 +84,8 @@ const createCharSheet = (charSheet) => {
 
     charSheetDiv.appendChild(div)
 }
+
+const disconnect = () => {
+    console.log("disconnecting");
+    com.sendToMain('disconnect', {})
+}  
