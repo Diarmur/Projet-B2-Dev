@@ -230,6 +230,7 @@ const createWindow = async () => {
   })
 
   ipcMain.on('select-sheet', (event, data) => {
+    console.log("sheet selected : ", data);
     selectedCharacter = data
   })
 
@@ -239,7 +240,7 @@ const createWindow = async () => {
     let monsters = []
     let sheet = []
     for (var monsterName in monstersData) {
-        monsters = tools.formatMonsterData(monstersData[monsterName])
+        monsters.push(tools.formatMonsterData(monstersData[monsterName]))
         
     }
     try {
@@ -266,7 +267,7 @@ const createWindow = async () => {
   }
 
   // Open DevTools - Remove for PRODUCTION!
-  mainWindow.webContents.openDevTools();
+//   mainWindow.webContents.openDevTools();
 
   // Listen for window being closed
   mainWindow.on('closed',  () => {
