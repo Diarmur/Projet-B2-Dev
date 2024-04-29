@@ -23,7 +23,7 @@ let character
 let allMonsters = []
 let monstersData = {}
 
-const URL_API = "http://10.44.18.213:8000"
+const URL_API = "http://127.0.0.1:8000"
 
 const charSheetExemple = {
             "id": 1,
