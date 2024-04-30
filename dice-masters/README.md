@@ -1,6 +1,6 @@
 # Projet-B2-Dev
 
-A software use for D&D (dungeons and dragons) fight simulation (Electron Side)
+A software use for D&D (dungeons and dragons) fight simulation (Electron Side).
 
 ## Initialization
 
