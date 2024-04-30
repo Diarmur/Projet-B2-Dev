@@ -210,7 +210,7 @@ const createWindow = async () => {
       characterSheets: charExemples
     }
     globalStat ={maxDamagesDeal:0, maxDamagesTake:0, hitNumber:0, xp:0}
-    allMonsters = {}
+    monstersData = {}
     event.sender.send('init-lobby', data)
 
   })
@@ -245,6 +245,7 @@ const createWindow = async () => {
         const allData = {}
         let monsters = []
         let sheet = []
+        console.log(monstersData);
         for (var monsterName in monstersData) {
             monsters.push(monstersData[monsterName])
             
@@ -284,11 +285,9 @@ const createWindow = async () => {
     }
     if (Object.keys(monstersData).length > 0) {
         for (const monster in monstersData) {
-            console.log(monstersData[monster]);
             const damages = tools.GetDamages(character, monstersData[monster])
             character.hit_points -= damages < 0 ? 0 : damages
             if (character.hit_points <= 0) {
-                console.log("you died");
                 globalStat.maxDamagesTake += (damages+character.hit_points)
                 mainWindow.loadFile("./src/end/end.html")
             } else {
@@ -301,9 +300,7 @@ const createWindow = async () => {
   })
 
   ipcMain.on("end-ready", (event, data) => {
-    console.log(character.hit_points);
     globalStat.title = character.hit_points > 0 ? "Well done, you killed all monsters":"Sorry, you died"
-    console.log(globalStat);
     event.sender.send("get-stats", globalStat)
   })
 

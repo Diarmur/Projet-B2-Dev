@@ -7,7 +7,6 @@ back.addEventListener("click", (e) => {
 })
 
 com.getFromMain("get-stats", data => {
-    console.log(data);
     document.getElementById("title").innerText = data.title
     document.getElementById("nbHit").innerText = `you made ${data.hitNumber} hit`
     document.getElementById("maxDmgD").innerText = `you inflicted ${data.maxDamagesDeal} damages`

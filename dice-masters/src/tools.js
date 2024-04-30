@@ -105,7 +105,6 @@ const generateSpellBook = async (spells, sheet) => {
 
 const DealDamages = (monsters,character, data) => {
     const target = monsters[data.target]
-    console.log(character);
     let dice, type
     if (data.action == "attack") {
         const dice_check = RollDice("1d20", 1)
@@ -121,7 +120,6 @@ const DealDamages = (monsters,character, data) => {
     }
 
     let damages = 0;
-    console.log(target.immunities.includes(type));
     if (target.immunities.includes(type)) {damages = 0}
     else if (target.resistances.includes(type)) {damages = RollDice(dice, 0.5)}
     else if (target.vulnerabilities.includes(type)) {damages = RollDice(dice, 2)}
@@ -154,7 +152,6 @@ const RollDice = (dice, coef) => {
     const diceData = dice.split("d")
     nbDices = parseInt(diceData[0])
     nbFaces = parseInt(diceData[1])
-    console.log(data, diceData);
     let damages = 0
     for (let i = 0; i < nbDices; i++) {
         damages += Math.floor(Math.random() * (nbFaces - 1) + 1);
