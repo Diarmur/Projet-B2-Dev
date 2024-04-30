@@ -7,7 +7,6 @@ const getApi = async (data) => {
         return res.json()
     }).then(data => {
         monsterInfo = data
-        // console.log('Data received:', data);
         return data
     })
 }

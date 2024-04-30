@@ -2,7 +2,7 @@ const api = require('./dnd_api')
 const axios = require('axios')
 const {session} = require('electron')
 
-const URL_API = "http://10.44.18.213:8000"
+const URL_API = "http://192.168.1.19:8000"
 
 const pickPort = (minPort, maxPort) => {
     const random = Math.random()
@@ -14,6 +14,7 @@ const pickPort = (minPort, maxPort) => {
 
 const formatMonsterData = (monsterData) => {
     formatData = {}
+    formatData["id"] = monsterData.id
     formatData["index"] = monsterData.index
     formatData["name"] = monsterData.name
     formatData["armor_class"] = monsterData.armor_class[0].value
@@ -25,10 +26,9 @@ const formatMonsterData = (monsterData) => {
     formatData["intelligence"] = monsterData.intelligence
     formatData["wisdom"] = monsterData.wisdom
     formatData["charisma"] = monsterData.charisma
-    formatData["damage_vulnerabilities"] = monsterData.damage_vulnerabilities
-    formatData["damage_resistances"] = monsterData.damage_resistances
-    formatData["damage_immunities"] = monsterData.damage_immunities
-    formatData["condition_immunities"] = monsterData.condition_immunities
+    formatData["vulnerabilities"] = monsterData.damage_vulnerabilities
+    formatData["resistances"] = monsterData.damage_resistances
+    formatData["immunities"] = monsterData.damage_immunities
     formatData["challenge_rating"] = monsterData.challenge_rating
     formatData["xp"] = monsterData.xp
     monsterData.special_abilities.forEach(ability => {
@@ -36,8 +36,7 @@ const formatMonsterData = (monsterData) => {
             formatData["spellcasting"] = ability.spellcasting
         }
     });
-    formatData["action"] = monsterData.action
-    formatData["url"] = monsterData.url
+    formatData["actions"] = monsterData.actions
     formatData["image"] = monsterData.image
     return formatData
 }
@@ -56,8 +55,7 @@ const formatSpell = (spell) => {
 const formatCharacterSheet = async (sheet) => {
     weapon = sheet.weapon.split(":")
     sheet.weapon = {damage_type:weapon[0], dice_hit:weapon[1]}
-    const val=await generateSpellBook(sheet.spell_book, sheet).then(data => {console.log(data);})
-    console.log("finished format");
+    if (sheet.spell_book != "none") val= await generateSpellBook(sheet.spell_book, sheet)
     return sheet
 }
 
@@ -81,7 +79,7 @@ const getMyId = async () => {
 
 const getCharacterSheet = async (id) => {
     const cookies = await session.defaultSession.cookies.get({});
-    const token = cookies[0].value;  
+    const token = cookies[0].value;
     const response = await axios.get( 
         URL_API+'/api/characterSheets/'+id,
         {
@@ -97,18 +95,77 @@ const generateSpellBook = async (spells, sheet) => {
     const spellsFormat = spells.split(',')
     const spell_book = []
     for (let i=0;i<spellsFormat.length;i++) {
-        console.log(spellsFormat[i]);
-        const spellData = await api.getApi("spells/"+spellsFormat[i]).then(console.log("test"))
+        const spellData = await api.getApi("spells/"+spellsFormat[i])
         let formatedSpell = formatSpell(spellData)
-        console.log("AAA",formatedSpell);
         spell_book.push(formatedSpell)
     }
     sheet.spell_book = spell_book
     return sheet
 }
 
+const DealDamages = (monsters,character, data) => {
+    const target = monsters[data.target]
+    console.log(character);
+    let dice, type
+    if (data.action == "attack") {
+        const dice_check = RollDice("1d20", 1)
+        if (dice_check < target.armor_class) return dice_check*-1;
+        const attack = character.weapon
+        type = attack.damage_type
+        dice = attack.dice_hit
 
-module.exports = {pickPort, formatMonsterData, formatCharacterSheet, getMyId, getCharacterSheet, generateSpellBook}
+    } else {
+        const spell = character.spell_book[data.action]
+        type = spell.damage.damage_type
+        dice = spell.damage.dice_hit
+    }
+
+    let damages = 0;
+    console.log(target.immunities.includes(type));
+    if (target.immunities.includes(type)) {damages = 0}
+    else if (target.resistances.includes(type)) {damages = RollDice(dice, 0.5)}
+    else if (target.vulnerabilities.includes(type)) {damages = RollDice(dice, 2)}
+    else {damages = RollDice(dice, 1)}
+    return damages
+}
+
+const GetDamages = (character, monster) => {
+    let attackData
+    for (let i = 0; i < monster.actions.length; i++) {
+        const action = monster.actions[i];
+        if ("damage" in action) {
+            attackData = action.damage[0]
+            break;
+        }
+    }
+    // attackData = monster.actions[0].damage[0]
+    const dice_check = RollDice(`1d20 + ${attackData.attack_bonus}`, 1)
+    if (dice_check < character.armor_class) return dice_check*-1;
+    const damages = RollDice(attackData.damage_dice, 1)
+    return damages
+
+}
+
+const RollDice = (dice, coef) => {
+    const data = dice.split(" + ") 
+    dice = data[0]
+    let add = 0
+    if (data.length > 1) add = parseInt(data[1])
+    const diceData = dice.split("d")
+    nbDices = parseInt(diceData[0])
+    nbFaces = parseInt(diceData[1])
+    console.log(data, diceData);
+    let damages = 0
+    for (let i = 0; i < nbDices; i++) {
+        damages += Math.floor(Math.random() * (nbFaces - 1) + 1);
+    }
+    damages = Math.floor((damages+add)*coef)
+    return damages
+}
+
+
+
+module.exports = {pickPort, formatMonsterData, formatCharacterSheet, getMyId, getCharacterSheet, generateSpellBook, DealDamages, GetDamages}
 
 // {
 //     index: 'acid-arrow',
