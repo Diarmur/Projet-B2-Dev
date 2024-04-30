@@ -54,6 +54,8 @@
 const charSheetDiv = document.getElementById("characterSheets")
 const addEnemy = document.getElementById("addEnemy")
 const start = document.getElementById("start")
+const errorMonster = document.getElementById("errorMonster")
+const monsterInput = document.getElementById("monsterName")
 
 
 const createCharSheet = (charSheet) => {
@@ -119,6 +121,18 @@ start.addEventListener('click', (e) => {
     console.log('start');
     com.sendToMain('start')
 })
+
+com.getFromMain('monster-error', (data) => {
+    errorMonster.innerText = "Monster not found"
+    errorMonster.style.display="block"
+})
+
+monsterInput.addEventListener('focus', (e) => {
+    console.log('focusout');
+    errorMonster.style.display="none"
+})
+
+
   
 
 com.sendToMain('lobby-ready', {})

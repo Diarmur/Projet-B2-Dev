@@ -25,7 +25,7 @@ let monstersData = {}
 let globalStat = {maxDamagesDeal:0, maxDamagesTake:0, hitNumber:0, xp:0}
 
 // const URL_API = "http://10.44.18.213:8000"
-const URL_API = "http://192.168.1.19:8000"
+const URL_API = "http://127.0.0.1:8000"
 
 const charSheetExemple = {
             "id": 1,
@@ -72,7 +72,7 @@ const createWindow = async () => {
 
   ipcMain.on('log-in', async (event, name, password) => {
     try {
-      const response = await axios.post("http://192.168.1.19:8000/api/login", {
+      const response = await axios.post(URL_API+"/api/login", {
         username: name,
         password: password
       });
@@ -223,7 +223,9 @@ const createWindow = async () => {
     try {
         monsterData = await apiDnd.getApi("monsters/"+data.name)
     } catch (error) {
-        console.log(error);
+        console.log("test error");
+        event.sender.send('monster-error', {})
+        return
     }
     const name = monsterData.name
     const id = Object.keys(monstersData).length

@@ -77,7 +77,10 @@ button:hover{
     justify-content: center;
     width: 80vw;
     height: 10vw; 
-    outline: 1px solid #370d10;
+}
+
+.monsterlist{
+    padding: 5px;
 }
 
 .start{
@@ -91,4 +94,18 @@ button:hover{
 .error{
     color: red;
     display: none;
+}
+
+input{
+    width: 20%;
+    height: 30px;
+    border: var(--secondary-color) 4px solid;
+    border-radius: 3px;
+    padding-left: 5px;
+    margin-bottom: 5px;
+}
+
+input:focus{
+    outline: none;
+    border: var(--primary-color) 4px solid;
 }

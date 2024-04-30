@@ -4,10 +4,7 @@ const getApi = async (data,dataType) => {
     let monsterInfo
     return await fetch(apiLink+data).then(res => {
         if (!res.ok){
-            if (dataType === 'monster') {
-                lobby.error();
-                return
-            }
+            throw new Error("Monster not found")   
         }
         return res.json()
     }).then(data => {
