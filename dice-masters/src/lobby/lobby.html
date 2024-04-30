@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="./lobby.css">
+    <title>Lobby</title>
+</head>
+<body>
+
+    <div class="container">
+        <div class="users" id="users">
+            <div class="user">
+                <p class="username" id="username">John</p>
+            </div>
+            <button id="disconnection" onclick="disconnect()">Disconnect</button>
+        </div>
+        <div class="characters">
+
+        
+            <label>Characters</label>
+            <div class="characterSheets" id="characterSheets">
+            </div>
+        </div>
+        
+        <div class="monsters" >
+            <label>Monsters</label>
+            
+            <input type="text" id="monsterName">
+            <span class="error" id="errorMonster">error</span>
+            <button id="addEnemy">Add</button>
+            <div class="monsterlist" id="monsters">
+            </div>
+        </div>
+        <button class="start" id="start">Start</button>
+    </div>
+    <!-- Wait for multi to be remake -->
+    <!-- <div class="lobbyAction">
+        <span class="lobbyCode" id="code">0000</span>
+        <button class="leave" id="leave">Leave</button>
+    </div> -->
+</body>
+<script src="./lobby.js"></script>
+<script src="../dnd_api.js"></script>
+</html>

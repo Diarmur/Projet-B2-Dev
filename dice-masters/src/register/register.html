@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/form.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <title>DiceMasters</title>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <form action="" class="form" id="form">
+                <h1>Sign in</h1>
+                <label for="username">Username:</label>
+                <input type="text" placeholder="Username" name="username" id="username">
+                <span class="hidden" id="errUsername"></span>
+                <span class="hidden" id="errLast"></span>
+                <label for="email">Email:</label>
+                <input type="email" placeholder="xyz@mail.com" name="email" id="email">
+                <span class="hidden" id="errEmail"></span>
+                <label for="password">Password:</label>
+                <input type="password" placeholder="*****" name="password" id="password">
+                <span class="hidden" id="errPassword"></span>
+                <label for="password_confirmation">Confirm Password:</label>
+                <input type="password" placeholder="*****" name="password_confirmation" id="password_confirmation">
+                <span class="hidden" id="errPassword_confirm"></span>
+        
+                <button type="submit">Register</button>
+            </form>
+            <p class="redirect">Already have an account?<a href="../login/login.html">Login</a></p>
+        </div>
+    </div>
+    
+    <script src= "./register.js"></script>
+</body>
+</html>

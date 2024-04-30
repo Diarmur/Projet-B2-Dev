@@ -1,0 +1,90 @@
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 28vw;
+    padding: 0;
+    margin: 0;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+}
+
+.form {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    flex-direction: column;
+    width: 70%;
+    padding-bottom: 10px;
+}
+
+.form input {
+    color: white;
+    margin: 10px 0;
+    padding: 2px;
+    border: none;
+    border-bottom: 2px solid white;
+    background-color: var(--secondary-color);
+    width: 100%;
+}
+
+.form input:focus {
+    outline: none;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.form button {
+    margin: 10px 0;
+    padding: 10px;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.error {
+    border: solid 2px red;
+}
+
+span {
+    display: inline;
+    color: red;
+    font-size: 12px;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: flex;
+    color: red;
+}
+
+.redirect {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: -10px;
+    padding-bottom: 15px;
+    gap: 5px;
+}
+
+.redirect a {
+    color: white;
+    text-decoration: none;
+}

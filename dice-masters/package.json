@@ -1,0 +1,21 @@
+{
+  "name": "dice-masters",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "demon": "nodemon --exec 'electron .'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "custom-electron-titlebar": "^4.2.8",
+    "electron": "^30.0.1",
+    "nodemon": "^3.1.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.8"
+  }
+}
