@@ -22,8 +22,10 @@ let selectedCharacter
 let character
 let allMonsters = []
 let monstersData = {}
+let globalStat = {maxDamagesDeal:0, maxDamagesTake:0, hitNumber:0, xp:0}
 
-const URL_API = "http://127.0.0.1:8000"
+// const URL_API = "http://10.44.18.213:8000"
+const URL_API = "http://192.168.1.19:8000"
 
 const charSheetExemple = {
             "id": 1,
@@ -70,7 +72,7 @@ const createWindow = async () => {
 
   ipcMain.on('log-in', async (event, name, password) => {
     try {
-      const response = await axios.post(URL_API+"/api/login", {
+      const response = await axios.post("http://192.168.1.19:8000/api/login", {
         username: name,
         password: password
       });
@@ -78,8 +80,9 @@ const createWindow = async () => {
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + 7);
 
+
       const cookie = {
-        url: URL_API, 
+        url: "http://127.0.0.1:8000", 
         name: 'token', 
         value: response.data.access_token,
         expirationDate : expirationDate.getTime() / 1000
@@ -90,7 +93,7 @@ const createWindow = async () => {
       })
       mainWindow.loadFile('./src/lobby/lobby.html')
     } catch (error) {
-      console.log(`Error: ${error}`);
+      console.log(`Login: ${error}`);
     }
   });
 
@@ -126,7 +129,6 @@ const createWindow = async () => {
   })
 
   ipcMain.on('disconnect', (event) => {
-    console.log("disconnect");
     session.defaultSession.clearStorageData()
     mainWindow.loadFile('./src/login/login.html')
   })
@@ -134,14 +136,12 @@ const createWindow = async () => {
   // MultiSystem Wait befor use
 
 //   ipcMain.on('start-server', (event) => {
-//     console.log('shoul start the server');
 //     server = serverCom.serverLaunch()
 //     client = clientCom.connectServer(8002, mainWindow, username)
 //     mainWindow.loadFile('./src/lobby/lobby.html')
 //   })
 
 //   ipcMain.on('connect', (event, address) => {
-//     console.log("try connection on :", address);
 //     client = clientCom.connectServer(address, mainWindow, username)
 //     mainWindow.loadFile('./src/lobby/lobby.html')
 //   })
@@ -159,9 +159,7 @@ const createWindow = async () => {
 //   })
 
 //   ipcMain.on('lobby-leave', (event, data) => {
-//     console.log("test");
 //     client.end()
-//     console.log(server);
 //     if (server != undefined) server.close()
 //     mainWindow.loadFile("./src/home/home.html")
 //   })
@@ -185,7 +183,6 @@ const createWindow = async () => {
     const config = {
       headers: { Authorization: `Bearer ${token}` }
     };
-
     const me = await axios.get(
       URL_API+'/api/me',
       {
@@ -212,7 +209,8 @@ const createWindow = async () => {
       username:me.data.username,
       characterSheets: charExemples
     }
-  
+    globalStat ={maxDamagesDeal:0, maxDamagesTake:0, hitNumber:0, xp:0}
+    monstersData = {}
     event.sender.send('init-lobby', data)
 
   })
@@ -221,9 +219,16 @@ const createWindow = async () => {
     // JSON.parse(data)
     data.name = data.name.toLowerCase()
     console.log("monsters/"+data.name);
-    const monsterData = await apiDnd.getApi("monsters/"+data.name,'monster')
-    console.log(monsterData);
-    monstersData[monsterData.name] = monsterData  
+    let monsterData
+    try {
+        monsterData = await apiDnd.getApi("monsters/"+data.name)
+    } catch (error) {
+        console.log(error);
+    }
+    const name = monsterData.name
+    const id = Object.keys(monstersData).length
+    monsterData.id = id
+    monstersData[id] = tools.formatMonsterData(monsterData)  
     event.sender.send('get-monster', monsterData)
   })
 
@@ -237,29 +242,70 @@ const createWindow = async () => {
 
   ipcMain.on('game-ready', async (event, data) => {
     // get the character sheet from the api
-    const allData = {}
-    let monsters = []
-    let sheet = []
-    for (var monsterName in monstersData) {
-        monsters = tools.formatMonsterData(monstersData[monsterName])
-        
-    }
+    character = await tools.getCharacterSheet(selectedCharacter)
+        const allData = {}
+        let monsters = []
+        let sheet = []
+        console.log(monstersData);
+        for (var monsterName in monstersData) {
+            monsters.push(monstersData[monsterName])
+            
+        }
     try {
-        allData['sheet'] = await tools.formatCharacterSheet(charSheetExemple)
-        character = new Character(sheet)
+        allData['sheet'] = await tools.formatCharacterSheet(character)        
     } catch (error) {
         console.log(error);
     }
 
-    monsters.forEach(monster => {
-        allMonsters.push(new Monster(monster))
-    });
+    // monsters.forEach(monster => {
+    //     allMonsters.push(monster)
+    // });
     allData.monsters = monsters
-    console.log("player sheet :",allData.sheet);
-    // console.log(monsters);
     
     event.sender.send('setup-game', allData)
   })
+
+  ipcMain.on("attack", (event, data) => {
+    let damages = tools.DealDamages(monstersData,character, data)
+    const target = monstersData[data.target]
+    target.hit_points -= damages < 0 ? 0 : damages
+    console.log(damages);
+    if (damages < 0) {
+        event.sender.send("attack", {target:target.name+target.id, msg:`You hit ${damages*-1} on touch throw, you miss the target`})
+    } else if (target.hit_points <= 0) {
+        globalStat.hitNumber += 1
+        globalStat.maxDamagesDeal += (damages+target.hit_points)
+        globalStat.xp += target.xp
+        event.sender.send("kill", {target:target.name+target.id, msg:`You deal ${damages} to ${target.name}, it fell on the ground`})
+        delete monstersData[data.target]
+        if (Object.keys(monstersData).length <= 0) mainWindow.loadFile("./src/end/end.html")
+    } else {
+        globalStat.hitNumber += 1
+        globalStat.maxDamagesDeal += (damages)
+        event.sender.send("attack", {target:target.name+target.id, msg:`You deal ${damages} damages to ${target.name}`})
+    }
+    if (Object.keys(monstersData).length > 0) {
+        for (const monster in monstersData) {
+            const damages = tools.GetDamages(character, monstersData[monster])
+            character.hit_points -= damages < 0 ? 0 : damages
+            if (character.hit_points <= 0) {
+                globalStat.maxDamagesTake += (damages+character.hit_points)
+                mainWindow.loadFile("./src/end/end.html")
+            } else {
+                globalStat.maxDamagesTake += damages
+                const msg = damages< 0? `${monstersData[monster].name} missed you`:`${monstersData[monster].name} hit you and did ${damages} damages`
+                event.sender.send("get-attacked", {msg:msg, hp:character.hit_points})
+            }
+        }
+    }
+  })
+
+  ipcMain.on("end-ready", (event, data) => {
+    globalStat.title = character.hit_points > 0 ? "Well done, you killed all monsters":"Sorry, you died"
+    event.sender.send("get-stats", globalStat)
+  })
+
+
   const cookies = await session.defaultSession.cookies.get({});
   if  (cookies.length > 0) {
     mainWindow.loadFile('./src/lobby/lobby.html')
@@ -267,8 +313,10 @@ const createWindow = async () => {
     mainWindow.loadFile('./src/login/login.html')
   }
 
+
+
   // Open DevTools - Remove for PRODUCTION!
-  mainWindow.webContents.openDevTools();
+//   mainWindow.webContents.openDevTools();
 
   // Listen for window being closed
   mainWindow.on('closed',  () => {

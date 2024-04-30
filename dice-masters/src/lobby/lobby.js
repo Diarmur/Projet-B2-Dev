@@ -104,6 +104,8 @@ const createMonster = (monster) => {
     const name = document.createElement('span')
     const dangerLvl = document.createElement('span')
 
+    div.classList.add("monster")
+
     name.innerText = "•"+monster.name+" "
     dangerLvl.innerText = "Cr "+monster.challenge_rating
 

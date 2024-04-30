@@ -1,10 +1,30 @@
-# Master Electron - Course Code
+# Projet-B2-Dev
 
-Demo project modified from: https://github.com/electron/electron-quick-start
+A software use for D&D (dungeons and dragons) fight simulation (Electron Side).
 
-*Modified for improved screen real estate and for the sake of consistent versioning.*
+## Initialization
 
-![Master Electron](https://raw.githubusercontent.com/stackacademytv/master-electron/master/splash.png)
+### Electron :
 
+#### Requirements
 
-npm i custom-electron-titlebar
+- Nodejs >= 20.12.1
+- npm >= 10.5.2
+
+#### Installation
+
+1. Clone the repository,
+
+2. Go in the folder ``Electron/dice-masters``
+
+3. Execute the command ``npm start``
+
+4. Dont forget to start the API side (https://github.com/Diarmur/Projet-B2-Dev-API)
+
+## Made with
+
+* [Electron](https://www.electronjs.org/)
+
+## Autors
+* **Diarmur** Mathis SILOTIA
+* **Godlonx** Rémi LAURENT

@@ -12,7 +12,6 @@ const getApi = async (data,dataType) => {
         return res.json()
     }).then(data => {
         monsterInfo = data
-        // console.log('Data received:', data);
         return data
     })
 }
