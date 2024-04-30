@@ -2,7 +2,7 @@ const api = require('./dnd_api')
 const axios = require('axios')
 const {session} = require('electron')
 
-const URL_API = "http://192.168.1.19:8000"
+const URL_API = "http://127.0.0.1:8000"
 
 const pickPort = (minPort, maxPort) => {
     const random = Math.random()

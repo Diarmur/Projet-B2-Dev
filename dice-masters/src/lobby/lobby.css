@@ -8,6 +8,19 @@
     color: white;
 }
 
+.users{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 90vw;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    height: 8vh;
+    background-color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
 .characters{
     display: flex;
     flex-direction: column;
@@ -29,6 +42,7 @@
     padding: 20px;
     border-radius: 2px;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .charSheet{
@@ -36,49 +50,62 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 25%;
+    width: 23.5%;
     height: auto;
     background-color: #D9D9D9;
-    border-radius: 10px;
     color: var(--secondary-color);
 }
 
-.monsters {
+button{
+    width: fit-content;
+    height: 40px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #370d10;
+}
+
+.monsters{
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: var(--secondary-color);
+    align-items: center;
+    justify-content: center;
+    width: 80vw;
+    height: 10vw; 
+}
+
+.monsterlist{
+    padding: 5px;
+}
+
+.start{
+    width: 75px;
+    height: 30px;
+    display: flex;
     align-items: center;
     justify-content: center;
 }
 
-input {
-    color: white;
-    margin: 10px 0;
-    padding: 2px;
-    border: none;
-    border-bottom: 2px solid white;
-    background-color: var(--secondary-color);
-    width: 100%;
+.error{
+    color: red;
+    display: none;
 }
 
-.monster {
-    display: flex;
-    gap: 10px;
-}
-
-button {
-    margin: 10px 0;
-    padding: 10px;
-    border: none;
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
+input{
+    width: 20%;
+    height: 30px;
+    border: var(--secondary-color) 4px solid;
     border-radius: 3px;
+    padding-left: 5px;
+    margin-bottom: 5px;
 }
 
-.start {
-    margin-top: 30px;
+input:focus{
+    outline: none;
+    border: var(--primary-color) 4px solid;
 }

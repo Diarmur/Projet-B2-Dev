@@ -54,6 +54,8 @@
 const charSheetDiv = document.getElementById("characterSheets")
 const addEnemy = document.getElementById("addEnemy")
 const start = document.getElementById("start")
+const errorMonster = document.getElementById("errorMonster")
+const monsterInput = document.getElementById("monsterName")
 
 
 const createCharSheet = (charSheet) => {
@@ -106,8 +108,8 @@ const createMonster = (monster) => {
 
     div.classList.add("monster")
 
-    name.innerText = monster.name
-    dangerLvl.innerText = monster.challenge_rating
+    name.innerText = "•"+monster.name+" "
+    dangerLvl.innerText = "Cr "+monster.challenge_rating
 
     div.appendChild(name)
     div.appendChild(dangerLvl)
@@ -119,12 +121,25 @@ start.addEventListener('click', (e) => {
     console.log('start');
     com.sendToMain('start')
 })
+
+com.getFromMain('monster-error', (data) => {
+    errorMonster.innerText = "Monster not found"
+    errorMonster.style.display="block"
+})
+
+monsterInput.addEventListener('focus', (e) => {
+    console.log('focusout');
+    errorMonster.style.display="none"
+})
+
+
   
 
 com.sendToMain('lobby-ready', {})
 
 com.getFromMain('init-lobby', (data) => {
-    console.log(data.characterSheets);
+    const username = document.getElementById("username")
+    username.innerText = data.username
     data.characterSheets.characters.forEach(characterSheet => {
         createCharSheet(characterSheet)
     });
@@ -139,3 +154,7 @@ addEnemy.addEventListener("click", (e) => {
 com.getFromMain('get-monster', (data) => {
     createMonster(data)
 })
+
+const error = () => {
+    console.log('error');
+}

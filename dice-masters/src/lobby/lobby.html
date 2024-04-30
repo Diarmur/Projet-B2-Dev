@@ -8,14 +8,14 @@
     <title>Lobby</title>
 </head>
 <body>
-    <!-- <div class="users" id="users">
-        <div class="user">
-            <span class="username" id="username">John</span>
-            <span class="character" id="character">Culdam</span>
-        </div>
-    </div> -->
+
     <div class="container">
-        <button id="disconnection" onclick="disconnect()">Disconnect</button>
+        <div class="users" id="users">
+            <div class="user">
+                <p class="username" id="username">John</p>
+            </div>
+            <button id="disconnection" onclick="disconnect()">Disconnect</button>
+        </div>
         <div class="characters">
 
         
@@ -23,12 +23,17 @@
             <div class="characterSheets" id="characterSheets">
             </div>
         </div>
-        <div class="monsters" id="monsters">
+        
+        <div class="monsters" >
             <label>Monsters</label>
+            
             <input type="text" id="monsterName">
+            <span class="error" id="errorMonster">error</span>
             <button id="addEnemy">Add</button>
+            <div class="monsterlist" id="monsters">
+            </div>
         </div>
-        <button id="start">Start</button>
+        <button class="start" id="start">Start</button>
     </div>
     <!-- Wait for multi to be remake -->
     <!-- <div class="lobbyAction">
@@ -37,4 +42,5 @@
     </div> -->
 </body>
 <script src="./lobby.js"></script>
+<script src="../dnd_api.js"></script>
 </html>
