@@ -209,7 +209,7 @@ const createWindow = async () => {
   }
 
     data = {
-      username:username,
+      username:me.data.username,
       characterSheets: charExemples
     }
   
@@ -219,8 +219,10 @@ const createWindow = async () => {
 
   ipcMain.on('request-monster', async (event, data) => {
     // JSON.parse(data)
+    data.name = data.name.toLowerCase()
     console.log("monsters/"+data.name);
-    monsterData = await apiDnd.getApi("monsters/"+data.name)
+    const monsterData = await apiDnd.getApi("monsters/"+data.name,'monster')
+    console.log(monsterData);
     monstersData[monsterData.name] = monsterData  
     event.sender.send('get-monster', monsterData)
   })

@@ -104,8 +104,8 @@ const createMonster = (monster) => {
     const name = document.createElement('span')
     const dangerLvl = document.createElement('span')
 
-    name.innerText = monster.name
-    dangerLvl.innerText = monster.challenge_rating
+    name.innerText = "•"+monster.name+" "
+    dangerLvl.innerText = "Cr "+monster.challenge_rating
 
     div.appendChild(name)
     div.appendChild(dangerLvl)
@@ -122,7 +122,8 @@ start.addEventListener('click', (e) => {
 com.sendToMain('lobby-ready', {})
 
 com.getFromMain('init-lobby', (data) => {
-    console.log(data.characterSheets);
+    const username = document.getElementById("username")
+    username.innerText = data.username
     data.characterSheets.characters.forEach(characterSheet => {
         createCharSheet(characterSheet)
     });
@@ -137,3 +138,7 @@ addEnemy.addEventListener("click", (e) => {
 com.getFromMain('get-monster', (data) => {
     createMonster(data)
 })
+
+const error = () => {
+    console.log('error');
+}
