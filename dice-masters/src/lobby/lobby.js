@@ -67,6 +67,7 @@ const createCharSheet = (charSheet) => {
     const id = document.createElement('span')
 
     div.className = "charSheet"
+    div.onclick = function() { selected(div);};
 
     lvl.setAttribute('id', 'lvl')
     name.setAttribute('id', 'name')
@@ -89,6 +90,23 @@ const createCharSheet = (charSheet) => {
         console.log(div.children[3]);
         com.sendToMain('select-sheet', id.innerText)
     })
+}
+
+const selected = (e) => {
+    const charSheets = document.getElementsByClassName('charSheet')
+    console.log(charSheets);
+    for (let i = 0; i < charSheets.length; i++) {
+        if (charSheets[i] == e) {
+            if (charSheets[i].classList.contains('selected')) {
+                charSheets[i].classList.remove('selected')
+            } else {
+                charSheets[i].classList.add('selected')
+                continue
+            }
+        }
+        charSheets[i].classList.remove('selected')
+    }
+    
 }
 
 start.addEventListener('click', (e) => {
